@@ -84,11 +84,9 @@
       <div class="container is-max-desktop">
         <div class="columns is-centered">
           <div class="column has-text-centered">
-            <h2 class="title is-1 publication-title" style="color: white;font-size: 2.5rem;">Training-Free Multi-Character Audio-Driven Animation via
-                Diffusion Transformer with Reward Feedback</h1>
+            <h2 class="title is-1 publication-title" style="color: white;font-size: 2.5rem;"> High-Fidelity and Long-Duration Human Image Animation with Large-Scale Video Diffusion Transformer </h1>
             
- 
-  
+   
   
             <div class="column has-text-centered">
               <div class="publication-links">
@@ -103,43 +101,7 @@
     </div>
   </section>
 
-<!-- 单独放视频部分 -->
-<section class="teaser1-section">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-full">
-        <style>
-          .videos-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-          }
-          .videos-container-top .video-item {
-            flex: 0 0 100%;
-            max-width: 80%;
-            box-sizing: border-box;
-          }
-          .video-item video {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            background-color: #000;
-            display: block;
-          }
-        </style>
-        <div class="videos-container videos-container-top">
-          <div class="video-item">
-            <video autoplay controls muted loop playsinline>
-              <source src="./static/cover/cover.mp4" type="video/mp4">
-            </video>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+ 
 
  <!-- 在Abstract部分插入视频 -->
 <section class="section">
@@ -162,18 +124,7 @@
         <p style="color: white;">
         </p>
 
-        <!-- 加个间距 -->
-        <div style="height: 20px;"></div>
- 
- 
-		
-	 <div style="height: 20px;"></div>
-		<!-- 加个间距 -->
-        <div style="height: 20px;"></div>
-
-        <p style="color: white;">
-        </p>
- 
+         
 		
         <div class="content has-text-justified">
           <p style="color: white;">
@@ -190,7 +141,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3" style="color: white;">Pipeline</h2>
+        <h2 class="title is-3" style="color: white;"> Pipeline </h2>
         <div class="has-text-centered" style="margin-top: 2em;">
           <figure class="image" style="display: block; position: relative; width: 100%; overflow: visible;">
             <img src="./data/pipeline.png" alt="Descriptive alt text"
@@ -214,7 +165,7 @@
         <div style="height: 100px;"></div>
 		
           <div class="has-text-centered">
-            <h2 class="title is-4" style="color: white;">Multi-Character Animation</h2>
+            <h2 class="title is-4" style="color: white;">Appearance and Motion Disentanglement (First column is driving video)</h2>
           </div>
 		  
 		 <!-- 加个间距 -->
@@ -229,61 +180,33 @@
 	
           
           <!-- 第一行2个视频 -->
-          <div class="videos-container" style="flex-wrap: nowrap;">
-            <div class="video-item" style="flex: 0 0 calc(50% - 5px); min-width: calc(50% - 5px);">
+          <div class="videos-container" style="flex-wrap: nowrap;">            
               <video autoplay controls muted loop playsinline>
                 <source src="./data/videos/1.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="video-item" style="flex: 0 0 calc(50% - 5px); min-width: calc(50% - 5px);">
+              </video>            
+          </div>
+       
+           
+          <!-- 第一行2个视频 -->
+          <div class="videos-container" style="flex-wrap: nowrap;">            
               <video autoplay controls muted loop playsinline>
                 <source src="./data/videos/2.mp4" type="video/mp4">
-              </video>
-            </div>
+              </video>            
           </div>
-          
-          <!-- 第二行3个视频 -->
-          <div class="videos-container" style="flex-wrap: nowrap;">
-            <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+		            <!-- 第一行2个视频 -->
+          <div class="videos-container" style="flex-wrap: nowrap;">            
               <video autoplay controls muted loop playsinline>
-                <source src="./data/videos/multi_persons_18-multiperson_36.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
-              <video autoplay controls muted loop playsinline>
-                <source src="./data/videos/multi_persons_17-multiperson_26.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
-              <video autoplay controls muted loop playsinline>
-                <source src="./data/videos/multi_persons_11-multiperson_09.mp4" type="video/mp4">
-              </video>
-            </div>
+                <source src="./data/videos/3.mp4" type="video/mp4">
+              </video>            
           </div>
-          
-          <!-- 第三行4个视频 -->
-          <div class="videos-container" style="flex-wrap: nowrap;">
-            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+		  
+		            <!-- 第一行2个视频 -->
+          <div class="videos-container" style="flex-wrap: nowrap;">            
               <video autoplay controls muted loop playsinline>
-                <source src="./data/videos/multi_persons_12-multiperson_14.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
-              <video autoplay controls muted loop playsinline>
-                <source src="./data/videos/multi_persons_19-multiperson_03.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
-              <video autoplay controls muted loop playsinline>
-                <source src="./data/videos/multi_persons_04-multiperson_13.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
-              <video autoplay controls muted loop playsinline>
-                <source src="./data/videos/male_song_02-multiperson_21.mp4" type="video/mp4">
-              </video>
-            </div>
+                <source src="./data/videos/4.mp4" type="video/mp4">
+              </video>            
           </div>
+		  
         </div>
       </div>
     </div>
