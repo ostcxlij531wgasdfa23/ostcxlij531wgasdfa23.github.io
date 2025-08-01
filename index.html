@@ -1,756 +1,696 @@
 <!DOCTYPE html>
+<html>
+<head>
 
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
-    <title>pose</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Add KaTeX -->
-    <link rel="stylesheet" href="./pose_files/katex.min.css">
-    <script defer="" src="./pose_files/katex.min.js"></script>
-    <script defer="" src="./pose_files/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #111;
-            color: #eee;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            position: relative;
-            background: none;
-            color: white;
-            text-align: center;
-            overflow: hidden;
-            width: 100%;
-            /* Maintain 16:9 aspect ratio for 1080p video */
-            aspect-ratio: 16 / 9;
-            min-height: 340px;
-        }
-        @supports not (aspect-ratio: 16/9) {
-            header {
-                height: 56.25vw; /* fallback for browsers without aspect-ratio */
-                min-height: 340px;
-                max-height: 980px;
-            }
-        }
-        .header-bg-video {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: 1;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        .header-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.3) 100%);
-            z-index: 2;
-            pointer-events: none;
-        }
-        header > *:not(.header-bg-video):not(.header-overlay) {
-            position: relative;
-            z-index: 3;
-        }
-        .header-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        h1 {
-            margin: 0;
-            font-size: 3rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            text-shadow: 0 4px 24px rgba(0,0,0,0.5);
-        }
-        h2 {
-            color: #4f8cff;
-            margin-top: 2.5rem;
-            font-size: 2.2rem;
-        }
-        .authors {
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-        }
-        .section {
-            margin-bottom: 3.5rem;
-        }
-        .video-explainer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .video-explainer video, .video-explainer iframe {
-            width: 100%;
-            max-width: 600px;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-        .results-category {
-            margin-bottom: 2rem;
-        }
-        .results-videos {
+  <style>
+    .results-carousel
+    .item img { width: 512px; height: 512px; }
+    .paper-button {
+      padding-right: 16px;
+      border-radius: 8px;
+      color: #fff;
+      background-color: rgba(128,128,128,0.3);
+      cursor: pointer;
+      transition: background-color 0.5s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .paper-button .icon {
+      box-sizing: content-box;
+      padding: 8px;
+      background-color: rgba(255,255,255,0.7);
+      margin-right: 16px;
+      transition: background-color 0.5s;
+    }
+
+    .paper-button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+    .paper-button:hover .icon {
+      background-color: #fff;
+    }
+  </style>
+
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Training-Free Multi-Character Audio-Driven Animation via Diffusion Transformer with Reward Feedback">
+  <meta name="keywords" content="Video Generation, Camera Motion transfer, Camera-Object Motion, Disentanglement">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title style="color: white;">Training-Free Multi-Character Audio-Driven Animation via Diffusion Transformer with Reward Feedback</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+ 
+
+
+ 
+<body style="background-color: black;">
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h2 class="title is-1 publication-title" style="color: white;font-size: 2.5rem;">Training-Free Multi-Character Audio-Driven Animation via
+                Diffusion Transformer with Reward Feedback</h1>
+            
+ 
+  
+  
+            <div class="column has-text-centered">
+              <div class="publication-links">
+ 
+ 
+              </div>
+  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- 单独放视频部分 -->
+<section class="teaser1-section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <style>
+          .videos-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .results-videos video, .results-videos iframe {
-            width: 280px;
-            height: 180px;
-            border-radius: 8px;
-            background: #eee;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 2.5rem auto;
-            background: #181818;
-            border-radius: 16px;
-            box-shadow: 0 4px 32px rgba(0,0,0,0.25);
-            padding: 3rem 4rem;
+            justify-content: center;
+            gap: 10px;
+          }
+          .videos-container-top .video-item {
+            flex: 0 0 100%;
+            max-width: 80%;
             box-sizing: border-box;
-            /* Allow overflow for carousels */
-            overflow-x: visible;
-        }
-        @media (max-width: 1200px) {
-            .container {
-                max-width: 98vw;
-                padding: 2rem 1.2rem;
-            }
-        }
-        @media (max-width: 700px) {
-            .container {
-                padding: 1rem 0.5rem;
-            }
-            h2 {
-                font-size: 1.3rem;
-            }
-            .results-videos {
-                flex-direction: column;
-                align-items: center;
-            }
-            .results-videos video, .results-videos iframe {
-                width: 100%;
-                height: auto;
-            }
-        }
-        .footer {
-            text-align: center;
-            color: #888;
-            font-size: 0.95rem;
-            margin: 2rem 0 1rem 0;
-        }
-        a {
-            color: #4f8cff;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .results-carousel {
-            position: relative;
+          }
+          .video-item video {
             width: 100%;
-            max-width: 1400px;
-            margin: 0 auto 2rem auto;
-            perspective: 1200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-            overflow-y: hidden;
-            height: auto; /* Let the height be flexible */
-        }
-        .carousel-cards {
-            display: flex;
-            align-items: center;
-            height: 100%;
-            min-width: 100%;
-            transition: transform 0.5s cubic-bezier(.4,2,.6,1);
-            cursor: grab;
-            will-change: transform;
-        }
-        .carousel-card {
-            flex: 0 0 70%;
-            max-width: 70%;
             height: auto;
-            background: #23272f;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-        .carousel-card video {
-            max-height: 360px;
-            min-height: 240px; /* Ensures controls always have room */
-            width: auto;
-            object-fit: contain;
-            border-radius: 12px;
+            border-radius: 8px;
             background-color: #000;
-            z-index: 1;
-            position: relative;
-        }
-        .video-wrapper-wide {
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .video-wrapper-wide video {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            background: #000;
-        }
-
-        .video-wrapper-tall {
-            height: 360px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .video-wrapper-tall video {
-            height: 100%;
-            width: auto;
-            object-fit: contain;
-            background: #000;
-        }
-        .carousel-card video, .carousel-card iframe {
-            max-height: 360px;   /* Same height for all previews */
-            height: auto;
-            width: auto;
-            object-fit: contain;
-            border-radius: 12px;
-            background: #23272f;
-        }
-        .carousel-card.center {
-            opacity: 1;
-            z-index: 3;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-            background: #23272f;
-            transform: scale(1.05);
-            pointer-events: auto;
-        }
-        .carousel-card.left,
-        .carousel-card.right {
-            opacity: 0.7;
-            z-index: 2;
-            transform: scale(1.0);
-        }
-        .carousel-card:not(.center):not(.left):not(.right) {
-            opacity: 0.2;
-            pointer-events: none;
-            transform: scale(1.0);
-        }
-        @media (max-width: 1500px) {
-            .results-carousel {
-                max-width: 98vw;
-                height: calc(49vw * 9 / 16);
-            }
-            .carousel-card, .carousel-card.center {
-                flex: 0 0 49vw;
-                max-width: 49vw;
-                width: 49vw;
-                height: calc(49vw * 9 / 16);
-            }
-        }
-        @media (max-width: 900px) {
-            .results-carousel {
-                max-width: 98vw;
-                height: calc(98vw * 9 / 16);
-            }
-            .carousel-card, .carousel-card.center {
-                flex: 0 0 98vw;
-                max-width: 98vw;
-                width: 98vw;
-                height: calc(98vw * 9 / 16);
-            }
-        }
-        .carousel-arrows {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 98%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            pointer-events: none;
-            z-index: 10;
-            transform: translateY(-50%);
-            padding: 0 10px;
-        }
-        .carousel-arrow {
-            pointer-events: auto;
-            background: #fff;
-            color: #4f8cff;
-            border: 2px solid #4f8cff;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            font-size: 2rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-            transition: background 0.2s, color 0.2s, border 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 11;
-        }
-        .carousel-arrow:hover {
-            background: #4f8cff;
-            color: #fff;
-            border: 2px solid #fff;
-        }
-    </style>
-<style type="text/css">.qa-sdk-wrapper {
-  position: fixed;
-  width: 400px;
-  right: -600px;
-  max-height: 530px;
-  overflow: hidden;
-  border-radius: 4px;
-  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
-  transition: all 0.5s ease-in-out;
-  background: #fff;
-}
-
-.qa-sdk-close-btn {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  position: absolute;
-  top: 16px;
-  right: 16px;
-}
-
-.qa-sdk-close-btn:hover {
-  border-radius: 50%;
-  background-color: #d5d9df;
-}
-
-#qa-sdk-iframe {
-  width: 400px;
-}
-
-@media (min-width: 1024px) and (max-width: 1366px) {
-  .qa-sdk-wrapper{
-    width: 356px;
-  }
-  #qa-sdk-iframe {
-    width: 356px;
-  }
-}
-</style></head>
-<body>
-    <header>
-        <video class="header-bg-video" autoplay="" loop="" muted="" playsinline="">
-            <source src="./pose_files/videos/gallery_01.mp4" type="video/mp4">
-        </video>
-        <div class="header-overlay"></div>
-        <div class="header-content">
-            <h1>High-Fidelity and Long-Duration Human Image Animation with Large-Scale Video Diffusion Transformer</h1>
-  
+            display: block;
+          }
+        </style>
+        <div class="videos-container videos-container-top">
+          <div class="video-item">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/cover/cover.mp4" type="video/mp4">
+            </video>
+          </div>
         </div>
-    </header>
-    <div class="container">
-        <div class="section">
-            <h2>Pipeline</h2>
-            <div style="display: flex; justify-content: center;">
-                <!-- Replace the src with your own video or YouTube embed -->
-                <img src="./pose_files/pipeline.png" style="width:1080px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+      </div>
+    </div>
+  </div>
+</section>
+
+
+ <!-- 在Abstract部分插入视频 -->
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+	
+		  
+		<!-- 加个间距 -->
+        <div style="height: 100px;"></div>
+
+             
+      <div class="column is-four-fifths">
+        <h2 class="title is-3" style="color: white;">Abstract</h2>
+	 <div style="height: 20px;"></div>
+		<!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+
+        <p style="color: white;">
+        </p>
+
+        <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+ 
+ 
+		
+	 <div style="height: 20px;"></div>
+		<!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+
+        <p style="color: white;">
+        </p>
+ 
+		
+        <div class="content has-text-justified">
+          <p style="color: white;">
+            Recent progress in diffusion models has significantly advanced the field of human image animation. While existing methods can generate temporally consistent results for short or regular motions, significant challenges remain, particularly in generating long-duration videos. Furthermore, the synthesis of fine-grained facial and hand details remains under-explored, limiting the applicability of current approaches in real-world, high-quality applications. To address these limitations, we propose a diffusion transformer (DiT)-based framework which focuses on generating high-fidelity and long-duration human animation videos. First, we design a set of hybrid implicit guidance signals, enabling our framework to additionally incorporate detailed face and hand features as guidance. Next, we incorporate the time-aware position shift fusion module, modify the input format within the DiT backbone, and refer to this mechanism as the Position Shift Adaptive Module, which enables video generation of arbitrary length. Finally, we introduce a novel data augmentation strategy and a skeleton alignment model to reduce the impact of human shape variations across different identities. Experimental results demonstrate that our method outperforms existing state-of-the-art approaches, achieving superior performance in both high-fidelity and long-duration human image animation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3" style="color: white;">Pipeline</h2>
+        <div class="has-text-centered" style="margin-top: 2em;">
+          <figure class="image" style="display: block; position: relative; width: 100%; overflow: visible;">
+            <img src="./data/pipeline.png" alt="Descriptive alt text"
+                 style="width: 140%; max-width: 900px; position: relative; left: 50%; transform: translateX(-50%);">
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+  <!-- Multi-Character Animation部分 -->
+  <section class="demo1-section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+	
+        <div class="column is-full">
+		  <!-- 加个间距 -->
+        <div style="height: 100px;"></div>
+		
+          <div class="has-text-centered">
+            <h2 class="title is-4" style="color: white;">Multi-Character Animation</h2>
+          </div>
+		  
+		 <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+
+        <p style="color: white;">
+        </p>
+
+        <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+
+	
+          
+          <!-- 第一行2个视频 -->
+          <div class="videos-container" style="flex-wrap: nowrap;">
+            <div class="video-item" style="flex: 0 0 calc(50% - 5px); min-width: calc(50% - 5px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./data/videos/1.mp4" type="video/mp4">
+              </video>
             </div>
-            <p>   Recent progress in diffusion models has significantly advanced the field of human image animation. While existing methods can generate temporally consistent results for short or regular motions, significant challenges remain, particularly in generating long-duration videos. Furthermore, the synthesis of fine-grained facial and hand details remains under-explored, limiting the applicability of current approaches in real-world, high-quality applications. To address these limitations, we propose a diffusion transformer (DiT)-based framework which focuses on generating high-fidelity and long-duration human animation videos. First, we design a set of hybrid implicit guidance signals, enabling our framework to additionally incorporate detailed face and hand features as guidance. Next, we incorporate the time-aware position shift fusion module, modify the input format within the DiT backbone, and refer to this mechanism as the Position Shift Adaptive Module, which enables video generation of arbitrary length. Finally, we introduce a novel data augmentation strategy and a skeleton alignment model to reduce the impact of human shape variations across different identities. Experimental results demonstrate that our method outperforms existing state-of-the-art approaches, achieving superior performance in both high-fidelity and long-duration human image animation.</p>
+            <div class="video-item" style="flex: 0 0 calc(50% - 5px); min-width: calc(50% - 5px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./data/videos/2.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          
+          <!-- 第二行3个视频 -->
+          <div class="videos-container" style="flex-wrap: nowrap;">
+            <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./data/videos/multi_persons_18-multiperson_36.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./data/videos/multi_persons_17-multiperson_26.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./data/videos/multi_persons_11-multiperson_09.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          
+          <!-- 第三行4个视频 -->
+          <div class="videos-container" style="flex-wrap: nowrap;">
+            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./data/videos/multi_persons_12-multiperson_14.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./data/videos/multi_persons_19-multiperson_03.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./data/videos/multi_persons_04-multiperson_13.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./data/videos/male_song_02-multiperson_21.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sing Song Animation部分 -->
+  <section class="demo2-section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full">
+			  <!-- 加个间距 -->
+        <div style="height: 100px;"></div>
+		
+          <div class="has-text-centered">
+            <h2 class="title is-4" style="color: white;">Singing</h2>
+          </div>
+          
+		  <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+
+        <p style="color: white;">
+        </p>
+
+        <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+		
+          <!-- 单行4个视频 -->
+          <div class="videos-container" style="flex-wrap: nowrap;">
+            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./static/song/male_song_01-male_36.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./static/song/female_song_01-female_55.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./static/song/female_song_04-female_58.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+              <video autoplay controls muted loop playsinline>
+                <source src="./static/song/female_song_03-female_59.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- One-Charactor Animation部分 -->
+<section class="demo3-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+	  	  <!-- 加个间距 -->
+        <div style="height: 100px;"></div>
+		
+        <div class="has-text-centered">
+          <h2 class="title is-4" style="color: white;">One-Character Animation</h2>
+        </div>
+          <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+
+        <p style="color: white;">
+        </p>
+
+        <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+
+	
+ 
+		
+        <!-- 第一行3个视频 -->
+        <div class="videos-container" style="flex-wrap: nowrap;">
+          <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/female_01-female_36.mp4" type="video/mp4">
+            </video>
+          </div>
+         <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/male_10-male_11.mp4" type="video/mp4">
+            </video>
+          </div>
+         <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/female_06-female_35.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+
+        <!-- 第二行4个视频 -->
+         <div class="videos-container" style="flex-wrap: nowrap;">
+          <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/male_06-male_09.mp4" type="video/mp4">
+            </video>
+          </div>
+         <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/female_04-female_25.mp4" type="video/mp4">
+            </video>
+          </div>
+         <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/female_03-female_07.mp4" type="video/mp4">
+            </video>
+          </div>
+        <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/male_11-male_26.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+
+        <!-- 第三行4个视频 -->
+       <div class="videos-container" style="flex-wrap: nowrap;">
+         <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/female_05-female_43.mp4" type="video/mp4">
+            </video>
+          </div>
+        <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/female_09-female_38.mp4" type="video/mp4">
+            </video>
+          </div>
+        <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/female_01-female_29.mp4" type="video/mp4">
+            </video>
+          </div>
+         <div class="video-item" style="flex: 0 0 calc(25% - 8px); min-width: calc(25% - 8px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/male_03-male_15.mp4" type="video/mp4">
+            </video>
+          </div>
         </div>
         
+        <!-- 第四行3个视频 -->
+       <div class="videos-container" style="flex-wrap: nowrap;">
+          <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/male_07-male_33.mp4" type="video/mp4">
+            </video>
+          </div>
+       <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/male_12-male_21.mp4" type="video/mp4">
+            </video>
+          </div>
+           <div class="video-item" style="flex: 0 0 calc(33.33% - 7px); min-width: calc(33.33% - 7px);">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/One_Charactor/male_04-male_34.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- Multi-Style Animation部分 -->
+<section class="demo4-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+	  	  <!-- 加个间距 -->
+        <div style="height: 100px;"></div>
+		
+        <div class="has-text-centered">
+          <h2 class="title is-4" style="color: white;">Multi-Style Animation</h2>
+        </div>
+        <div style="height: 20px;"></div>
+		<!-- 加个间距 -->
+        <div style="height: 20px;"></div>
 
+        <p style="color: white;">
+        </p>
 
-        <div class="section">
-            <h2>Results</h2>
-            <div class="results-category">
-                <h3>Results Gallery</h3>We provided more results of    . (Double click the video to zoom in for better quality)
-                <p></p>
-                <div class="video-gallery" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;">
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_01.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_02.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_03.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_04.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_05.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_06.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_07.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_08.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_09.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <div class="video-item" style="flex: 1 1 100%; max-width: 1080px;">
-                        <video controls="" style="width: 100%; border-radius: 16px; background: #23272f; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
-                            <source src="./pose_files/videos/gallery_10.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                </div>
-            </div>
-            <div class="results-category">
+        <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+		
+		<style>
+          .videos-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+          }
+          .videos-container.row1 .video-item {
+           flex: 0 0 calc(33.33% - 7px);
+            max-width: calc(33.33% - 7px);
+          }
+          .videos-container.row2 .video-item {
+           flex: 0 0 calc(50% - 5px);
+            max-width: calc(50% - 5px);
+          }
+  
+          .video-item video {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            background-color: #000;
+          }
+        </style>
+		
+        <!-- 第一行3个视频 -->
+        <div class="videos-container row1">
+          <div class="video-item">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/animal/male_13-male_37.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="video-item">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/animal/male_08-male_31.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="video-item">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/animal/male_09-male_35.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
 
+        <!-- 第二行2个视频 -->
+        <div class="videos-container row1">
+          <div class="video-item">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/animal/male_05-animal_01.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="video-item">
+            <video autoplay controls muted loop playsinline>
+              <source src="./static/animal/male_04-male_03.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-               <h3>Compare with sota: </h3>
-                   
-                <p></p>
-                <div style="display: flex; justify-content: center;">
-                  <video autoplay controls muted loop playsinline>
-							<source src="./pose_files/videos/1.mp4" type="video/mp4">
-					</video>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <video controls="" style="width:1080px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
-                        <source src="./pose_files/videos/compare2.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-               
-            </div>
+<section class="demo4-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+	  	  <!-- 加个间距 -->
+        <div style="height: 100px;"></div>
+		
+        <div class="has-text-centered">
+          <h2 class="title is-4" style="color: white;">Methods Comparsion</h2>
+        </div>
+        <div style="height: 20px;"></div>
+		<!-- 加个间距 -->
+        <div style="height: 20px;"></div>
 
+        <p style="color: white;">
+        </p>
 
-                <h3>Appearance and Motion Disentanglement (First column is driving video)</h3>    tt.
-                <p></p>
-                <div style="display: flex; justify-content: center;">
-                    <video controls="" style="width:1080px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
-                        <source src="./pose_files/videos/1.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <video controls="" style="width:1080px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
-                        <source src="./pose_files/videos/2.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <video controls="" style="width:1080px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
-                        <source src="./pose_files/videos/3.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <video controls="" style="width:1080px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
-                        <source src="./pose_files/videos/4.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                 
-            </div>
-            <h3>Diversity</h3>We show that     can generate diverse motions for varity of reference images.
-            <p></p>
-            <!-- Second Carousel -->
-            <div class="results-carousel">
-                <div class="carousel-cards" style="transform: translateX(-1589px);">
-                    <div class="carousel-card"><div class="video-wrapper-tall"><video controls=""><source src="./pose_files/videos/diversity_02.mp4" type="video/mp4"></video></div></div>
-                    <div class="carousel-card left"><div class="video-wrapper-tall"><video controls=""><source src="./pose_files/videos/diversity_03.mp4" type="video/mp4"></video></div></div>
-                    <div class="carousel-card center"><div class="video-wrapper-tall"><video controls=""><source src="./pose_files/videos/diversity_04.mp4" type="video/mp4"></video></div></div>
-                    <div class="carousel-card right"><div class="video-wrapper-tall"><video controls=""><source src="./pose_files/videos/diversity_06.mp4" type="video/mp4"></video></div></div>
-                    <div class="carousel-card"><div class="video-wrapper-tall"><video controls=""><source src="./pose_files/videos/diversity_07.mp4" type="video/mp4"></video></div></div>
-
-                </div>
-                <div class="carousel-arrows">
-                    <button class="carousel-arrow left" aria-label="Previous">←</button>
-                    <button class="carousel-arrow right" aria-label="Next">→</button>
-                </div>
-            </div>
-
-<!--            <div class="results-category">-->
-<!--                <h3>Motion Generation</h3>Our latent motion descriptor serves as a unified representation for motion generation via continuous motion prediction. It conditioned-->
-<!--                    on the preceding 9 frame and generate the rest frames.-->
-<!--                </p>-->
-<!--                <div style="display: flex; justify-content: center;">-->
-<!--                    <video controls  style="width:360px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">-->
-<!--                        <source src="./pose_files/videos/uncond.mp4" type="video/mp4">-->
-<!--                        Your browser does not support the video tag.-->
-<!--                    </video>-->
-<!--                </div>-->
-<!--            </div>-->
-            <div class="results-category">
-                <h3>Comparison to State-of-the-Art Methods</h3>
-                <div style="display: flex; justify-content: center;">
-                    <video controls="" style="width:1080px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
-                        <source src="./pose_files/videos/comparison_02.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <video controls="" style="width:1080px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
-                        <source src="./pose_files/videos/comparison_01.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <video controls="" style="width:1080px; border-radius:16px; background:#23272f; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
-                        <source src="./pose_files/videos/comparison_05.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </div>
-            <div class="results-category">
-                <h2>Ethics</h2>
-                <div style="margin: 0 auto; font-size: 1.1rem; color: #ccc; background: #23272f; border-radius: 10px; padding: 1.5rem 2rem;">
-                    Our research presents advanced generative AI capabilities for human video synthesis. We firmly oppose the misuse of our technology for generating manipulated content of real individuals. While our model enables the creation and editing of photorealistic digital humans, we strongly condemn any application aimed at spreading misinformation, damaging reputations, or creating deceptive content. We acknowledge the ethical considerations surrounding this technology and are committed to responsible development and deployment that prioritizes transparency and prevents harmful applications. The images and videos used in these demos are from public sources or generated by models, and are solely used to demonstrate the capabilities of this research work. If there are any concerns, please contact us () and we will delete it in time.
-                </div>
+        <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
+		
+    
+    <!-- 三行视频 -->
+    <div style="margin: 20px 0;">
+	  <div class="content has-text-justified">
+          <p style="color: white;">
+            Due to the inability of Hallo3 to support full-body animation, its corresponding result has consequently been removed from the comparison.
+          </p>
+        </div>
+		
+        <!-- 第一行视频 -->
+        <div class="videos-container" style="flex-wrap: nowrap; margin-bottom: 20px;">
+            <div class="video-item" style="flex: 0 0 100%; min-width: 100%;">
+                <video controls muted loop playsinline style="width: 100%;">
+                    <source src="./static/compare/sonic_fantasy_hunyuan_multitalk_omniavatar_ours_03.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
             </div>
         </div>
-    
-    <script>
-        // Card carousel logic: no overlap, half cards visible, drag/swipe
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.results-carousel').forEach(function(carousel) {
-                const cards = Array.from(carousel.querySelectorAll('.carousel-card'));
-                const wrapper = carousel.querySelector('.carousel-cards');
-                // Set current to the middle card
-                let current = Math.floor(cards.length / 2);
-                let startX = 0;
-                let isDragging = false;
-                let deltaX = 0;
-
-                function update() {
-                    // Set classes for center, left, right, and arrange cards in a cycle
-                    cards.forEach((card, i) => {
-                        card.classList.remove('left', 'center', 'right');
-                        if (i === current) {
-                            card.classList.add('center');
-                        } else if (i === (current - 1 + cards.length) % cards.length) {
-                            card.classList.add('left');
-                        } else if (i === (current + 1) % cards.length) {
-                            card.classList.add('right');
-                        }
-                    });
-                    // Move the wrapper so the center card is always in the middle
-                    const cardWidth = cards[0].offsetWidth;
-                    const carouselWidth = wrapper.parentElement.offsetWidth;
-                    // Center the current card in the carousel
-                    wrapper.style.transform = `translateX(${(carouselWidth / 2) - ((current + 0.5) * cardWidth)}px)`;
-                }
-
-                function slideTo(dir) {
-                    if (dir === 'left') {
-                        current = (current - 1 + cards.length) % cards.length;
-                    } else if (dir === 'right') {
-                        current = (current + 1) % cards.length;
-                    }
-                    update();
-                }
-
-                // Mouse/touch drag support
-                wrapper.addEventListener('mousedown', (e) => {
-                    isDragging = true;
-                    startX = e.clientX;
-                    deltaX = 0;
-                    wrapper.style.cursor = 'grabbing';
-                });
-                window.addEventListener('mousemove', (e) => {
-                    if (!isDragging) return;
-                    deltaX = e.clientX - startX;
-                });
-                window.addEventListener('mouseup', (e) => {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    wrapper.style.cursor = 'grab';
-                    if (deltaX > 60) {
-                        slideTo('left');
-                    } else if (deltaX < -60) {
-                        slideTo('right');
-                    }
-                    deltaX = 0;
-                });
-                // Touch support
-                wrapper.addEventListener('touchstart', (e) => {
-                    isDragging = true;
-                    startX = e.touches[0].clientX;
-                    deltaX = 0;
-                });
-                wrapper.addEventListener('touchmove', (e) => {
-                    if (!isDragging) return;
-                    deltaX = e.touches[0].clientX - startX;
-                });
-                wrapper.addEventListener('touchend', (e) => {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    if (deltaX > 60) {
-                        slideTo('left');
-                    } else if (deltaX < -60) {
-                        slideTo('right');
-                    }
-                    deltaX = 0;
-                });
-
-                // Add event listeners for arrow buttons
-                const leftArrow = carousel.querySelector('.carousel-arrow.left');
-                const rightArrow = carousel.querySelector('.carousel-arrow.right');
-                if (leftArrow) {
-                    leftArrow.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        slideTo('left');
-                    });
-                }
-                if (rightArrow) {
-                    rightArrow.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        slideTo('right');
-                    });
-                }
-
-                update();
-                window.addEventListener('resize', update);
-            });
-        });
-    </script>
-
-		 <!-- 在Abstract部分插入视频 -->
-	 <section class="section">
-	  <div class="container is-max-desktop">
-
-		<!-- Abstract. -->
-		<div class="columns is-centered has-text-centered">
+         <!-- 底部标签 sonic_hallo3_fantasy_hunyuan_multitalk_omniavatar_ours_01 --> 
+    <div style="display: flex; justify-content: space-between; margin-top: 0px;">
+        <div style="flex: 1; text-align: center; color: white;">sonic</div>		
+        <div style="flex: 1; text-align: center; color: white;">fantasy</div>
+        <div style="flex: 1; text-align: center; color: white;">hunyuan</div>
+        <div style="flex: 1; text-align: center; color: white;">multitalk</div>
+        <div style="flex: 1; text-align: center; color: white;">omniavatar</div>
+        <div style="flex: 1; text-align: center; color: white;">ours</div>
+    </div>
+	  <!-- 加个间距 -->
+        <div style="height: 20px;"></div>
 		
-			  
-			<!-- 加个间距 -->
-			<div style="height: 100px;"></div>
+		
+        <!-- 第二行视频 -->
+        <div class="videos-container" style="flex-wrap: nowrap; margin-bottom: 20px;">
+            <div class="video-item" style="flex: 0 0 100%; min-width: 100%;">
+                <video controls muted loop playsinline style="width: 100%;">
+                    <source src="./static/compare/sonic_hallo3_fantasy_hunyuan_multitalk_omniavatar_ours_01.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+        
+        <!-- 第三行视频 -->
+        <div class="videos-container" style="flex-wrap: nowrap; margin-bottom: 20px;">
+            <div class="video-item" style="flex: 0 0 100%; min-width: 100%;">
+                <video controls muted loop playsinline style="width: 100%;">
+                    <source src="./static/compare/sonic_hallo3_fantasy_hunyuan_multitalk_omniavatar_ours_02.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部标签 sonic_hallo3_fantasy_hunyuan_multitalk_omniavatar_ours_01 --> 
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <div style="flex: 1; text-align: center; color: white;">sonic</div>
+		<div style="flex: 1; text-align: center; color: white;">hallo3</div>
+        <div style="flex: 1; text-align: center; color: white;">fantasy</div>
+        <div style="flex: 1; text-align: center; color: white;">hunyuan</div>
+        <div style="flex: 1; text-align: center; color: white;">multitalk</div>
+        <div style="flex: 1; text-align: center; color: white;">omniavatar</div>
+        <div style="flex: 1; text-align: center; color: white;">ours</div>
+    </div>
+	</div>
+   </div>
+   </div>
+</section>
 
-				 
-		  <div class="column is-four-fifths">
-			<h2 class="title is-3" style="color: white;">Abstract</h2>
-		 <div style="height: 20px;"></div>
-			<!-- 加个间距 -->
-			<div style="height: 20px;"></div>
+<!-- 单独放视频部分 -->
+<section class="teaser-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <style class="video-style1">
+          .videos-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+          }
 
-			<p style="color: white;">
-			</p>
+          .videos-container-3x2 .video-item {
+            flex: 0 0 calc(33.333% - 7px);
+            box-sizing: border-box;
+          }
 
-			<!-- 加个间距 -->
-			<div style="height: 20px;"></div>
-		<div class="container">
-		  <div class="columns is-centered">
-			<div class="column is-full">
-			 <style>
-			  .videos-container {
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: center;
-				gap: 10px;
-			  }
-			  .videos-container-top .video-item {
-				flex: 0 0 100%;
-				max-width: 80%;
-				box-sizing: border-box;
-			  }
-			  .video-item video {
-				width: 100%;
-				height: auto;
-				border-radius: 8px;
-				background-color: #000;
-				display: block;
-			  }
-			</style>
-			  <div class="videos-container videos-container-top">
-				<div class="video-item">
-				  <video autoplay controls muted loop playsinline>
-					<source src="./pose_files/videos/gallery_01.mp4" type="video/mp4">
-				  </video>
-				</div>
-			  </div>
-			</div>
-		  </div>
-		</div>
-		<div style="height: 20px;"></div>
-		 <div class="columns is-centered" >
-			  <p style="color: white;">
-				This video is generated by our model
-			  </p>
-			</div>
-			
-		 <div style="height: 20px;"></div>
-			<!-- 加个间距 -->
-			<div style="height: 20px;"></div>
+          .video-item video {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            background-color: #000;
+          }
+        </style>
 
-			<p style="color: white;">
-			</p>
-	 
-			
-			<div class="content has-text-justified">
-			  <p style="color: white;">
-				Recent advances in diffusion models have significantly improved audio-driven human video generation, surpassing traditional methods in both quality and controllability. However, existing approaches still face challenges in lip-sync accuracy, temporal coherence for long video generation, and multi-character animation. In this work, we propose a diffusion transformer (DiT)-based framework for generating lifelike talking videos of arbitrary length, and introduce a training-free method for multi-character audio-driven animation. First, we employ a LoRA-based training strategy combined with a position shift inference approach, which enables efficient long video generation while preserving the capabilities of the foundation model. Moreover, we combine partial parameter updates with reward feedback to enhance both lip synchronization and natural body motion. Finally, we propose a training-free approach, Mask Classifier-Free Guidance (Mask-CFG), for multi-character animation, which requires no specialized datasets or model modifications and supports audio-driven animation for three or more characters. Experimental results demonstrate that our method outperforms existing state-of-the-art approaches, achieving high-quality, temporally coherent, and multi-character audio-driven video generation in a simple, efficient, and cost-effective manner.
-			  </p>
-			</div>
-		  </div>
-		</div>
-	  </div>
-	</section>
+        <div class="videos-container videos-container-3x2">
 
-<!----></body><div id="ai-assist-root-bangs"><template shadowrootmode="open"><div id="ai-assist-bangs" data-v-app=""><div data-v-ac38116e=""><svg data-v-ac38116e="" id="__SVG_SPRITE_NODE__" aria-hidden="true" style="position: absolute; width: 0px; height: 0px;"><symbol id="icon-bang_drag" fill="none" viewBox="0 0 16 16"><path fill="currentColor" d="M6 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm0-5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm0-5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm4 10a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm0-5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm0-5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"></path></symbol><symbol id="icon-bang_pack_up" fill="none" viewBox="0 0 16 16"><g clip-path="url(#icon-bang_pack_up_a)"><path fill="currentColor" d="M13.657 2.343A8 8 0 1 0 2.343 13.658 8 8 0 0 0 13.657 2.343Z"></path><path fill="#fff" d="M10.622 9.813a.403.403 0 0 1 0 .572l-.243.242a.402.402 0 0 1-.572 0L7.873 8.682l-1.94 1.94a.402.402 0 0 1-.571 0l-.243-.243a.402.402 0 0 1 0-.572l1.946-1.934-1.94-1.94a.403.403 0 0 1 0-.571l.242-.243a.403.403 0 0 1 .572 0l1.934 1.946 1.94-1.94a.403.403 0 0 1 .572 0l.242.242a.403.403 0 0 1 0 .572L8.682 7.873l1.94 1.94Z"></path></g><defs><clippath id="icon-bang_pack_up_a"><path fill="#fff" d="M0 0h16v16H0z"></path></clippath></defs></symbol><symbol id="icon-bangs-right" fill="none" viewBox="0 0 8 8"><path fill="#EBEBEB" fill-opacity=".8" fill-rule="evenodd" d="M7 8h1V0H0v.062C3.946.554 7 3.92 7 8Z" clip-rule="evenodd"></path><mask id="icon-bangs-right_a" fill="#fff"><path fill-rule="evenodd" d="M.612.163A7.978 7.978 0 0 0 0 .062V0h3.127A9 9 0 0 1 8 8H7A8.003 8.003 0 0 0 .612.163Z" clip-rule="evenodd"></path></mask><path fill="#D7D7D7" d="m0 .062-.124.992L-1 .944V.063h1Zm.612.1.2-.98-.2.98ZM0 0h-1v-1h1v1Zm3.127 0v-1h.243l.216.112L3.127 0ZM8 8h1v1H8V8ZM7 8v1H6V8h1ZM.124-.93c.232.029.462.066.689.113l-.401 1.96a6.978 6.978 0 0 0-.536-.089L.124-.93ZM1 0v.062h-2V0h2Zm2.127 1H0v-2h3.127v2ZM7 8A8 8 0 0 0 2.668.888l.918-1.776A10 10 0 0 1 9 8H7Zm0-1h1v2H7V7ZM6 8A7.003 7.003 0 0 0 .412 1.142l.4-1.96C4.915.023 8 3.65 8 8H6Z" mask="url(#icon-bangs-right_a)"></path></symbol><symbol id="icon-bangs-left" fill="none" viewBox="0 0 8 8"><path fill="#EBEBEB" fill-opacity=".8" fill-rule="evenodd" d="M1 8H0V0h8v.062A8.001 8.001 0 0 0 1 8Z" clip-rule="evenodd"></path><mask id="icon-bangs-left_a" fill="#fff"><path fill-rule="evenodd" d="M7.388.163C7.589.12 7.793.088 8 .062V0H4.873A9 9 0 0 0 0 8h1A8.003 8.003 0 0 1 7.388.163Z" clip-rule="evenodd"></path></mask><path fill="#D7D7D7" d="m8 .062.124.992L9 .944V.063H8Zm-.612.1-.2-.98.2.98ZM8 0h1v-1H8v1ZM4.873 0v-1H4.63l-.216.112.459.888ZM0 8h-1v1h1V8Zm1 0v1h1V8H1ZM7.876-.93a8.978 8.978 0 0 0-.689.113l.401 1.96c.176-.037.355-.066.536-.089L7.876-.93ZM7 0v.062h2V0H7ZM4.873 1H8v-2H4.873v2ZM1 8A8 8 0 0 1 5.332.888L4.414-.888A10 10 0 0 0-1 8h2Zm0-1H0v2h1V7Zm1 1a7.003 7.003 0 0 1 5.588-6.858l-.4-1.96C3.085.023 0 3.65 0 8h2Z" mask="url(#icon-bangs-left_a)"></path></symbol><symbol id="icon-bang_fixation" fill="none" viewBox="0 0 16 16"><g clip-path="url(#icon-bang_fixation_a)"><path fill="currentColor" d="M15.471 4.79C15.433 4.752 11.5.818 11.113.442a.426.426 0 0 0-.04-.04 1.785 1.785 0 0 0-2.395.124 2.2 2.2 0 0 0-.5 1.764c.002.122.005.25.005.367a3.048 3.048 0 0 1-1.22 1.885 3.37 3.37 0 0 1-2.173.983 4.243 4.243 0 0 0-.326-.037l-.133-.015a3.148 3.148 0 0 0-3.58 1.173.799.799 0 0 0 .126.965l2.608 2.608-3.328 4.5a.788.788 0 0 0 .081 1.038.8.8 0 0 0 .561.236.772.772 0 0 0 .465-.156l4.546-3.283 2.576 2.576a.8.8 0 0 0 .983.114 3.112 3.112 0 0 0 1.167-3.515c-.005-.04-.04-.323-.057-.481a4.349 4.349 0 0 1 1.238-2.477 2.446 2.446 0 0 1 1.624-.943c.117 0 .243.002.359.007a2.206 2.206 0 0 0 1.775-.495 1.805 1.805 0 0 0-.004-2.55Z"></path></g><defs><clippath id="icon-bang_fixation_a"><path fill="#fff" d="M0 0h16v16H0z"></path></clippath></defs></symbol></svg><!----><!----></div><!----><!----></div><style>.modal[data-v-1d586ce0]{position:fixed;top:0;left:0;width:100%;height:100%;background-color:transparent}.modal .modal-content[data-v-1d586ce0]{width:488px;margin:8px auto!important;background-color:#fff;border:1px solid var(--15,rgba(0,0,0,.15));border-radius:8px;box-shadow:0 6px 30px 5px rgba(0,0,0,.05),0 16px 24px 2px rgba(0,0,0,.04),0 8px 10px -5px rgba(0,0,0,.08);display:flex;flex-direction:column}.modal .header[data-v-1d586ce0]{position:relative;padding:24px 40px 24px 24px!important;display:flex;gap:8px}.modal .header .close[data-v-1d586ce0]{position:absolute;top:8px;right:8px;cursor:pointer}.modal .header .close .closeIcon[data-v-1d586ce0]{width:32px;height:32px;padding:8px!important;border-radius:var(---4,4px)}.modal .header .close .closeIcon[data-v-1d586ce0]:hover{background:var(--0-hover-6,rgba(0,0,0,.06))}.modal .header .close .closeIcon[data-v-1d586ce0]:active{background:var(--0-click-10,rgba(0,0,0,.1))}.modal .header .logo[data-v-1d586ce0]{width:24px;height:24px}.modal .header .title[data-v-1d586ce0]{color:var(--90,rgba(0,0,0,.9));font-weight:700}.modal .content[data-v-1d586ce0],.modal .header .title[data-v-1d586ce0]{font-family:Microsoft YaHei UI;font-size:16px;font-style:normal;line-height:24px}.modal .content[data-v-1d586ce0]{padding:0 24px 8px 56px!important;color:var(--60,rgba(0,0,0,.6));font-weight:400}.modal .footer[data-v-1d586ce0]{padding:24px!important}.guide_container[data-v-09129a18]{position:fixed;top:10px;right:16px;width:316px;height:94px;border-radius:8px;background:linear-gradient(103deg,#fdf3ff 11.28%,#d3edff 86.9%);z-index:2147483647;padding-top:8px;padding:12px 16px!important;box-shadow:0 6px 30px 5px rgba(0,0,0,.05),0 16px 24px 2px rgba(0,0,0,.04),0 8px 10px -5px rgba(0,0,0,.08)}.guide_container .arrow[data-v-09129a18]{position:absolute;top:-9px;right:40px;width:16px;height:9px;display:flex}.guide_container .close[data-v-09129a18]{display:flex;width:32px;height:32px;position:absolute;top:4px;right:4px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEUSURBVHgB7ZYxCsJAEEVHo1ilshOElFqKhaBX8LAWXkDwDKkVbAXBQogI/sENyJJkZ3ZXRMyHT0iKvJdNMglRm39PUnFsiM7QC1pQnKToEr2iN5fAAp2iGXqMIMHwNTpCH+jJJXA28DSCRAnnLV/93j5XlUBhoFmghA3fmi25BGJIiOBNAiESYrhLwEdCBZcIaCTUcKmARMILrhFokhj4wjkd0uf9au/mWN8HztGsQJlyJSboCh2b/Y0WzunSl/Nzt8B+2nnZcwoY2xqBulctaGxLBVzvubeEREA6ZLwkXALaCaeWSCLCvSSSyHC1RPIBuEqiSmBOr/EaAq+T4A/XwSXAv809dBcItyV46uZk/Za3afMEN22Ov918RpUAAAAASUVORK5CYII=) no-repeat 50%;background-size:16px 16px;background-repeat:no-repeat;background-position:8px 8px;cursor:pointer;border-radius:50%}.guide_container .close[data-v-09129a18]:hover{background-color:rgba(0,0,0,.06)}.guide_container .close[data-v-09129a18]:active{background-color:rgba(0,0,0,.1)}.guide_container .container[data-v-09129a18]{display:flex;gap:12px}.guide_container .container .img[data-v-09129a18]{width:48px;height:48px;background:url(data:image/png;base64,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) no-repeat 50%;background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0}.guide_container .container .content[data-v-09129a18]{display:flex;flex-direction:column;gap:4px}.guide_container .container .content .title[data-v-09129a18]{color:var rgba(0,0,0,.9);font-family:Microsoft YaHei UI;font-size:15px;font-weight:700;line-height:22px}.guide_container .container .content span[data-v-09129a18]{color:rgba(0,0,0,.9);font-family:Microsoft YaHei UI;font-size:14px;line-height:22px}.guide_container .container .content span label[data-v-09129a18]{color:#e37318}@keyframes showAnimation-ac38116e{0%{top:-44px}to{top:0}}#ai-assist-bangs .ai-assist-bangs[data-v-ac38116e]{position:fixed;top:-44px;z-index:2147483647;width:-moz-max-content;width:max-content;height:44px;padding:0;display:flex;align-items:center;background:hsla(0,0%,92%,.8);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);border-radius:0 0 16px 16px;border-top:0;padding:0 7px;font-size:14px;transition:top .3s}#ai-assist-bangs .ai-assist-bangs.hidden[data-v-ac38116e]{top:-44px!important}#ai-assist-bangs .ai-assist-bangs.showDom[data-v-ac38116e]{top:0}#ai-assist-bangs .ai-assist-bangs.loadingAnimation[data-v-ac38116e]{position:relative;left:inherit!important}#ai-assist-bangs .ai-assist-bangs .bangs-container[data-v-ac38116e]{display:flex;align-items:center;width:-moz-max-content;width:max-content}#ai-assist-bangs .ai-assist-bangs .bangs-container[data-v-ac38116e]:before{position:absolute;content:"";width:calc(100% + 2px);height:calc(100% - 8px);bottom:0;left:-1px;border:1px solid #d7d7d7;z-index:-1;border-radius:0 0 16px 16px;border-top:0}#ai-assist-bangs .ai-assist-bangs .hiddenDom[data-v-ac38116e]{position:absolute;top:44px;left:50%;width:166px;height:4px;transform:translateX(-50%);border-radius:0 0 4px 4px;border-top:0;-webkit-backdrop-filter:blur(3.5px);backdrop-filter:blur(3.5px);background:rgba(56,56,56,.4)}#ai-assist-bangs .ai-assist-bangs .hiddenDom[data-v-ac38116e]:before{content:"";width:calc(100% + 2px);height:calc(100% + 1px);position:absolute;top:0;left:-1px;border-radius:0 0 4px 4px;border:1px solid hsla(0,0%,100%,.35)}#ai-assist-bangs .ai-assist-bangs .hiddenDom.hidden[data-v-ac38116e]{opacity:0}#ai-assist-bangs .ai-assist-bangs .hiddenDom.show[data-v-ac38116e]{opacity:1;transition:opacity .3s;transition-delay:.3s}#ai-assist-bangs .ai-assist-bangs .hiddenDom.animation[data-v-ac38116e]{opacity:1;top:44px;animation:moveDown-ac38116e 1.2s}@keyframes moveDown-ac38116e{0%{opacity:1;top:32px}33%{opacity:1;top:44px}to{opacity:1}}#ai-assist-bangs .ai-assist-bangs .transparentDom[data-v-ac38116e]{height:12px;position:absolute;z-index:-1;top:44px;left:50%;transform:translateX(-50%)}#ai-assist-bangs .ai-assist-bangs .transparentDom.hidden[data-v-ac38116e]{opacity:0}#ai-assist-bangs .ai-assist-bangs .transparentDom.show[data-v-ac38116e]{opacity:1;transition:opacity .3s;transition-delay:.3s}#ai-assist-bangs .ai-assist-bangs .transparentDom i[data-v-ac38116e]{opacity:0;transition:opacity .3s;display:block;position:absolute;top:0;left:50%;width:184px;height:12px;transform:translateX(-50%);background-size:100% 100%;background-repeat:no-repeat}#ai-assist-bangs .ai-assist-bangs .transparentDom.shining i[data-v-ac38116e]{opacity:1}@keyframes shiningColor-ac38116e{0%{opacity:0}33%{opacity:0}66%{opacity:1}to{opacity:0}}#ai-assist-bangs .ai-assist-bangs .transparentDom.animation i[data-v-ac38116e]{opacity:1;animation:shiningColor-ac38116e 1.2s}#ai-assist-bangs .ai-assist-bangs .move-area[data-v-ac38116e]{cursor:move;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;opacity:0}#ai-assist-bangs .ai-assist-bangs .move-area[data-v-ac38116e]:not(.show){width:0!important}#ai-assist-bangs .ai-assist-bangs .move-area.show[data-v-ac38116e]{margin:0 0 0 8px;opacity:1;transition:width .2s,margin .2s,opacity .2s}#ai-assist-bangs .ai-assist-bangs .move-area[data-v-ac38116e]:hover{background:rgba(0,0,0,.06)}#ai-assist-bangs .ai-assist-bangs .move-area[data-v-ac38116e]:active{background:rgba(0,0,0,.1)}#ai-assist-bangs .ai-assist-bangs .move-area .svg-icon[data-v-ac38116e]{color:rgba(0,0,0,.9)}#ai-assist-bangs .ai-assist-bangs .bang-logo[data-v-ac38116e]{padding:0 16px 0 4px;height:28px;position:relative}#ai-assist-bangs .ai-assist-bangs .bang-logo img[data-v-ac38116e]{width:28px;height:28px}#ai-assist-bangs .ai-assist-bangs .bang-logo[data-v-ac38116e]:after{content:"";position:absolute;width:1px;height:12px;top:50%;transform:translateY(-50%);right:0;background:rgba(0,0,0,.1);margin:0 4px}#ai-assist-bangs .ai-assist-bangs .container[data-v-ac38116e]{display:flex;align-items:center;box-sizing:border-box;padding:0 4px;gap:4px;height:36px;border-radius:18px;overflow:hidden;position:relative}#ai-assist-bangs .ai-assist-bangs .container .bang-logo[data-v-ac38116e]{padding:0 25px 0 8px;height:28px;position:relative}#ai-assist-bangs .ai-assist-bangs .container .bang-logo img[data-v-ac38116e]{width:28px;height:28px}#ai-assist-bangs .ai-assist-bangs .container .bang-logo .img-ai[data-v-ac38116e]{position:absolute;z-index:1}#ai-assist-bangs .ai-assist-bangs .container .bang-logo[data-v-ac38116e]:after{content:"";position:absolute;width:1px;height:12px;top:50%;transform:translateY(-50%);right:8px;background:rgba(0,0,0,.1)}#ai-assist-bangs .ai-assist-bangs .container .stepBox[data-v-ac38116e]{display:flex;align-items:center;height:100%;width:-moz-fit-content;width:fit-content;justify-content:center;transition:margin-left .3s}#ai-assist-bangs .ai-assist-bangs .container .stepBox.hidden[data-v-ac38116e]{visibility:hidden;opacity:0;position:absolute}#ai-assist-bangs .ai-assist-bangs .container .stepBox.showLogo[data-v-ac38116e]{position:static}#ai-assist-bangs .ai-assist-bangs .container .stepBox.showLogo .bang-logo[data-v-ac38116e]{opacity:1;transition:opacity .3s}#ai-assist-bangs .ai-assist-bangs .container .stepBox .loadingText.hidden[data-v-ac38116e]{width:0!important;transition:width .35s}#ai-assist-bangs .ai-assist-bangs .container .animation-logo.stopLoading[data-v-ac38116e]{opacity:0;position:absolute;transition:opacity .3s}@keyframes spin-ac38116e{0%{transform:rotate(0deg)}to{transform:rotate(-1turn)}}#ai-assist-bangs .ai-assist-bangs .container .animation-logo .bang-logo .loading[data-v-ac38116e]{animation:spin-ac38116e .25s linear infinite}#ai-assist-bangs .ai-assist-bangs .container .disabled-box[data-v-ac38116e]{width:0;display:contents}#ai-assist-bangs .ai-assist-bangs .container .disabled-box:not(.show) .loadingText[data-v-ac38116e]{opacity:0;width:0!important}#ai-assist-bangs .ai-assist-bangs .container .disabled-box.show[data-v-ac38116e]{width:100%}#ai-assist-bangs .ai-assist-bangs .container .disabled-box.show .loadingText[data-v-ac38116e]{opacity:1;transition:all .3s}#ai-assist-bangs .ai-assist-bangs .container .loadingText[data-v-ac38116e]{width:100%;opacity:1;color:var(--90,rgba(0,0,0,.9));font-family:Microsoft YaHei;font-size:15px;font-style:normal;font-weight:400;line-height:22px;transition:opacity .5s ease;white-space:nowrap;overflow:hidden}#ai-assist-bangs .ai-assist-bangs .container .loadingText .loading-dots[data-v-ac38116e]{display:inline}#ai-assist-bangs .ai-assist-bangs .container .loadingText .loading-dots .dot[data-v-ac38116e]{animation:fade-ac38116e 1s linear infinite}#ai-assist-bangs .ai-assist-bangs .container .loadingText .loading-dots .dot[data-v-ac38116e]:nth-child(2){animation-delay:.3s}#ai-assist-bangs .ai-assist-bangs .container .loadingText .loading-dots .dot[data-v-ac38116e]:nth-child(3){animation-delay:.6s}@keyframes fade-ac38116e{0%{opacity:0}to{opacity:1}}#ai-assist-bangs .ai-assist-bangs .container .loadingTextHidden[data-v-ac38116e]{transition:opacity .5s ease;opacity:.2}#ai-assist-bangs .ai-assist-bangs .container .loadingTextNone[data-v-ac38116e]{transition:width 2s ease;width:0}#ai-assist-bangs .ai-assist-bangs .container .tabList[data-v-ac38116e]{display:flex;align-items:center;width:0;overflow:hidden;opacity:0;transition-property:none;padding:3px 0}#ai-assist-bangs .ai-assist-bangs .container .tabList.show[data-v-ac38116e]{width:100%;opacity:1;transition-property:all;gap:4px}#ai-assist-bangs .ai-assist-bangs .container .tabList.show button[data-v-ac38116e]{width:100%;flex-shrink:0}#ai-assist-bangs .ai-assist-bangs .container .tabList:not(.show) button[data-v-ac38116e]{width:0!important}#ai-assist-bangs .ai-assist-bangs .container button[data-v-ac38116e]{display:flex;justify-content:flex-start;align-items:center;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;overflow:hidden;width:0}#ai-assist-bangs .ai-assist-bangs .container button .button-box[data-v-ac38116e]{cursor:pointer;display:flex;justify-content:flex-start;align-items:center;gap:8px;padding:3px 16px;min-width:-moz-fit-content;min-width:fit-content}#ai-assist-bangs .ai-assist-bangs .container button[data-v-ac38116e]:hover:not(:disabled){border-radius:99px;background:rgba(0,0,0,.06)}#ai-assist-bangs .ai-assist-bangs .container button[data-v-ac38116e]:active:not(:disabled){border-radius:99px;background:var(--0-click-10,rgba(0,0,0,.1))}#ai-assist-bangs .ai-assist-bangs .container button.active[data-v-ac38116e]{border-radius:16px;background:#fff!important;box-shadow:0 2px 4px 0 rgba(64,64,64,.1)}#ai-assist-bangs .ai-assist-bangs .container button[data-v-ac38116e]:disabled{cursor:not-allowed}#ai-assist-bangs .ai-assist-bangs .container button:disabled .image img[data-v-ac38116e]{margin-left:-16px}#ai-assist-bangs .ai-assist-bangs .container button:disabled span[data-v-ac38116e]{color:#a4a4a4}#ai-assist-bangs .ai-assist-bangs .container button .cont[data-v-ac38116e]{display:flex;justify-content:center;align-items:center}#ai-assist-bangs .ai-assist-bangs .container button .image[data-v-ac38116e]{width:16px;height:16px;overflow:hidden;border-radius:4px;display:flex}#ai-assist-bangs .ai-assist-bangs .container button img[data-v-ac38116e]{width:64px;height:16px}#ai-assist-bangs .ai-assist-bangs .container button span[data-v-ac38116e]{color:var(--90,rgba(0,0,0,.9));font-size:15px;font-style:normal;font-weight:400;height:22px;line-height:15px;text-align:center;display:flex;align-items:center;white-space:nowrap}#ai-assist-bangs .ai-assist-bangs .container button.section[data-v-ac38116e]{margin-left:13px;position:relative}#ai-assist-bangs .ai-assist-bangs .container button.section[data-v-ac38116e]:before{content:"";position:absolute;width:1px;height:12px;top:8px;left:-8px;background:rgba(0,0,0,.1)}#ai-assist-bangs .ai-assist-bangs .icon-border[data-v-ac38116e]{position:absolute;top:0;right:-8px;color:rgba(0,0,0,.08)}#ai-assist-bangs .ai-assist-bangs .border-left[data-v-ac38116e]{left:-8px;right:auto}#ai-assist-bangs .ai-assist-bangs .close[data-v-ac38116e]{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;margin:0 8px;cursor:pointer}#ai-assist-bangs .ai-assist-bangs .close[data-v-ac38116e]:not(.show){opacity:0;width:0!important}#ai-assist-bangs .ai-assist-bangs .close .show[data-v-ac38116e]{margin:0 8px;opacity:1;transition:width .2s,margin .2s,opacity .2s}#ai-assist-bangs .ai-assist-bangs .close .svg-icon[data-v-ac38116e]{color:rgba(0,0,0,.4)}#ai-assist-bangs .ai-assist-bangs .close[data-v-ac38116e]:hover{background:rgba(0,0,0,.06)}#ai-assist-bangs .ai-assist-bangs .close[data-v-ac38116e]:active{background:rgba(0,0,0,.1)}#ai-assist-bangs .ai-assist-bangs .guide[data-v-ac38116e]{position:absolute;top:64px;left:50%;height:34px;width:-moz-max-content;width:max-content;border-radius:0 16px 16px 16px;background:linear-gradient(91deg,#f05cea 1.27%,#8055fb 31.54%,#3b70f8 64.92%,#1daeff 99.75%);box-shadow:0 1.582px 6.327px 0 rgba(0,0,0,.2);-webkit-backdrop-filter:blur(3.9545459747px);backdrop-filter:blur(3.9545459747px);display:flex;align-items:center;gap:8px;color:#fff;text-align:center;font-size:14px;letter-spacing:.14px;padding:0 12px}#ai-assist-bangs .ai-assist-bangs .guide .cursor[data-v-ac38116e]{position:absolute;pointer-events:none;top:-20px;left:-10px;width:20px;height:20px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAABFFBMVEUAAAAFBQUcHBwICAjQ0NABAQEBAQEBAQECAgIEBAQDAwMBAQECAgISEhKhoaH///8BAQH39/cDAwP///////+tra3////8/Pzy8vL8/Pzr6+tMTEz19fXo6OjY2Nj8/Pz+/v6goKD8/PzX19f////m5ubBwcHCwsLp6emjo6OQkJCMjIyjo6Pj4+P///8tLS06OjoyMjJCQkIuLi4wMDBYWFhGRkY8PDw+Pj5VVVVMTExISEg4ODg1NTVKSkpAQEA0NDREREQ3NzdiYmJSUlJQUFBdXV1bW1tOTk7z8/Nra2tlZWVfX19oaGjo6Ojl5eWIiIjt7e2YmJjY2NjMzMykpKR+fn5wcHDAwMCwsLCPj497e3sN3bTZAAAALnRSTlMACwQFTyEvFisTKBoPCmXfJCEegLD+79LKUUU5ELCXgXBmwZiQjn9+aWRVPDIS1pEyjQAAAe9JREFUOMuV1GtXokAcBvAFUuTmspKrW1vb3u8DaZA3LCUzMPLSVlt9/+/Rf8bRETmM9Rz01e88zDPn6KsXx6pUDp7jvkzL5en2+43uL5pE0e309ZtNcAdFURTf/dskRYBxHI9G92/fcaG0g0CNguCyjCxeobGFCLs8P38IP3CgsIXmbDh0oysYz4GUuW4zvsqcJAEE5mLWPDsbwvhsCG2EDQYXF60bGJ/1alC4DbNWt3uDrKxGogZEtdued0vHpxspa2HV69VqLh2famRtwE5OGo0mGZ9uXGHYHR87vf8g07ALzPOWyul0+v6MjWcQqxXW75+eHh7OkJWCnlcD1qDM94Ed1et3obUOl6zDmG3bXniwBglzcBtRR6BIZttrkLatlNVt/D35JCUhGeqzNppg/EMSExeOh87bJiFayVdFEBON+D5I2QR9KxY/kqf489duThakBPQJq9uP6HuepaACTDbSozXDz/nCMqqaKymkkZ1xvqAd7kOLmVukpFHHGslGb7xfgBJNXkTRdRidaCR94z1wmqILixiGiB2Df5Bj2864msdOkCRRhA88VDEoV6+D4LqyO3di9u9a/r2HUJU63l+KUlLh1lQTHNRlB6CpwrXw+yCSLpdMk52P825d1jSZOm6loUMM6ridEoTHngCP93ci4MDcjgAAAABJRU5ErkJggg==) no-repeat 50%;background-size:100% 100%;background-repeat:no-repeat}#ai-assist-bangs .ai-assist-bangs .guide .close-guide[data-v-ac38116e]{margin:0;width:16px;height:16px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAOVBMVEUAAAD///////////////////////////////////////////////////////////////////////8KOjVvAAAAE3RSTlMA5R3XyHJWDrqsj2VkOSuenYGAB/0IqwAAAH5JREFUOMvlkc0SwBAMhBNtaUt/eP+Hra2DEWaMs+9is9kZITQX9tGyLFDMvOVyi6UqAoaRyP0qQA6eT9pDOxJouCfUCaWp4lqifxhzxGO5qMGNxL6jf1MTtfLPKuYTCfT7gf4V/SH7zxz9KAs3JB2grZivXpYZWzfp18lyKj4bdgL3VhxVRAAAAABJRU5ErkJggg==) no-repeat 50%;background-size:100% 100%;background-repeat:no-repeat}#ai-assist-bangs .ai-assist-bangs .guide .close-guide[data-v-ac38116e]:hover{background-color:rgba(0,0,0,.06)}#ai-assist-bangs .ai-assist-bangs .guide .close-guide[data-v-ac38116e]:active{background-color:rgba(0,0,0,.1)}.leftContainer[data-v-ac38116e]{width:48px;display:flex;justify-content:center;z-index:100}.leftContainer .prev[data-v-ac38116e]{width:28px;height:28px;display:flex;justify-content:center;align-items:center;border-radius:50%;background:var(--6-normal-6,rgba(0,0,0,.06));cursor:pointer}.leftContainer .prev .icon[data-v-ac38116e]{width:8px;height:8px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAMAAACROYkbAAAAXVBMVEUAAAAAAAD///8AAAD///////8AAAD///8AAAD///////8AAAD///8AAAD///8AAAAAAAD///8AAAD///8AAAAAAAD///8AAAD///8AAAAAAAD///////////////+u2f9SAAAAH3RSTlMAQuXlODIrJBYT19fIyJ6ej1ZWR0c5HR0ODggHBI+Ot0DnTQAAAMJJREFUOMuFk0kOwjAQBL0R9h0COMD/n0lLYTSqSFbqVhdXO0twXsdAOurzQH8v6bdthq9ihF83Cb5elIB8zhn5GCPyKSXkSynMC+QF8gJ5wbxAXiAvkBfMC+QF8gJ5wbxAXiAvkBfMC+QF8sLyOOCynxxw5wHn3cwB4XHiFerkCv2HVxhwBY4Y1UeMqhHth8gR5tVfI0aYD/4aOcLMRrhrRONDwggTG2FiI0xshOt/BFwj4BrR+Jl8BL129P4L1YggfhrPClazJSPaAAAAAElFTkSuQmCC) no-repeat 0/32px 8px}.leftContainer .prev[data-v-ac38116e]:hover{background:var(--6-hover-10,rgba(0,0,0,.1))}.leftContainer .prev[data-v-ac38116e]:active{background:var(--6-click-15,rgba(0,0,0,.15))}.leftContainer.disabled .prev[data-v-ac38116e]{background:var(--6-normal-6,rgba(0,0,0,.06))}.leftContainer.disabled .prev .icon[data-v-ac38116e]{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAMAAACROYkbAAAAXVBMVEUAAAAAAAD///8AAAD///////8AAAD///8AAAD///////8AAAD///8AAAD///8AAAAAAAD///8AAAD///8AAAAAAAD///8AAAD///8AAAAAAAD///////////////+u2f9SAAAAH3RSTlMAQuXlODIrJBYT19fIyJ6ej1ZWR0c5HR0ODggHBI+Ot0DnTQAAAMJJREFUOMuFk0kOwjAQBL0R9h0COMD/n0lLYTSqSFbqVhdXO0twXsdAOurzQH8v6bdthq9ihF83Cb5elIB8zhn5GCPyKSXkSynMC+QF8gJ5wbxAXiAvkBfMC+QF8gJ5wbxAXiAvkBfMC+QF8sLyOOCynxxw5wHn3cwB4XHiFerkCv2HVxhwBY4Y1UeMqhHth8gR5tVfI0aYD/4aOcLMRrhrRONDwggTG2FiI0xshOt/BFwj4BrR+Jl8BL129P4L1YggfhrPClazJSPaAAAAAElFTkSuQmCC) no-repeat -8px 0/32px 8px!important}.leftContainer.disabled .prev[data-v-ac38116e]:active,.leftContainer.disabled .prev[data-v-ac38116e]:hover{background:var(--6-normal-6,rgba(0,0,0,.06))}.rightContainer[data-v-ac38116e]{width:48px;display:flex;justify-content:center;z-index:100}.rightContainer .next[data-v-ac38116e]{width:28px;height:28px;display:flex;justify-content:center;align-items:center;border-radius:50%;background:var(--6-normal-6,rgba(0,0,0,.06));cursor:pointer}.rightContainer .next .icon[data-v-ac38116e]{width:8px;height:8px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAACm53kpAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEhSURBVHgB3ZUxDgFRFEXvIKGiUihUEgmJgkqUFmEddjIrYANWYAd2oNOpiIQWGfdNTDIizP+X6p/kNBM/9897NwZ4J6Zt6PRoDSJJksRUzufZDq3iB/Z0Q2fQmNIJbUGAl9/TDZXyeW5Mh7Tp8vvSh+e2gRh6G6wBPehtSPN/aIM1oOPShhK+Y1tYQW+DtWAEsQ1ZvtoGYi3of2tD0QCMoNvgMoCMINvgMwAjuDb4DiAjmDaoAzAa9AydMr1C5x/59wo01nROL9A40C29QSPNj6JIzT/RHc/ffAdggfPnBRRs4/biR2ik+by4mm8Dtxc/ZQ98BhDM1vMPXQYQ3NbzFA0gyK3n+TSAoLdexJLWoTOA33/LC/w2L6icz7Nd6pz/AM6iuzMCp5O4AAAAAElFTkSuQmCC) no-repeat 0/32px 8px}.rightContainer .next[data-v-ac38116e]:hover{background:var(--6-hover-10,rgba(0,0,0,.1))}.rightContainer .next[data-v-ac38116e]:active{background:var(--6-click-15,rgba(0,0,0,.15))}.rightContainer.disabled .next[data-v-ac38116e]{background:var(--6-normal-6,rgba(0,0,0,.06))}.rightContainer.disabled .next .icon[data-v-ac38116e]{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAACm53kpAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEhSURBVHgB3ZUxDgFRFEXvIKGiUihUEgmJgkqUFmEddjIrYANWYAd2oNOpiIQWGfdNTDIizP+X6p/kNBM/9897NwZ4J6Zt6PRoDSJJksRUzufZDq3iB/Z0Q2fQmNIJbUGAl9/TDZXyeW5Mh7Tp8vvSh+e2gRh6G6wBPehtSPN/aIM1oOPShhK+Y1tYQW+DtWAEsQ1ZvtoGYi3of2tD0QCMoNvgMoCMINvgMwAjuDb4DiAjmDaoAzAa9AydMr1C5x/59wo01nROL9A40C29QSPNj6JIzT/RHc/ffAdggfPnBRRs4/biR2ik+by4mm8Dtxc/ZQ98BhDM1vMPXQYQ3NbzFA0gyK3n+TSAoLdexJLWoTOA33/LC/w2L6icz7Nd6pz/AM6iuzMCp5O4AAAAAElFTkSuQmCC) no-repeat -8px 0/32px 8px!important}.rightContainer.disabled .next[data-v-ac38116e]:active,.rightContainer.disabled .next[data-v-ac38116e]:hover{background:var(--6-normal-6,rgba(0,0,0,.06))}.modal .content[data-v-ac38116e]{color:var(--60,rgba(0,0,0,.6));font-weight:400}.modal .content[data-v-ac38116e],.modal .type[data-v-ac38116e]{font-family:Microsoft YaHei UI;font-size:16px;font-style:normal;line-height:24px}.modal .type[data-v-ac38116e]{color:var(---normal,#e37318);font-weight:700}.modal .footer[data-v-ac38116e]{display:flex;justify-content:end;gap:12px}.modal .footer .skinCenter[data-v-ac38116e]{display:flex;height:32px;padding:5px 16px!important;justify-content:center;align-items:center;font-size:14px;gap:8px;border-radius:var(---4,4px);border:1px solid var(--15,rgba(0,0,0,.15))!important;cursor:pointer;color:var(--90,rgba(0,0,0,.9))!important}.modal .footer .skinCenter[data-v-ac38116e]:hover{color:var(--hover,#27c566)!important;border:1px solid var(--hover,#27c566)!important}.modal .footer .skinCenter[data-v-ac38116e]:active{color:var(--click,#029c4a)!important;border:1px solid var(--click,#029c4a)!important}.modal .footer .skin13[data-v-ac38116e]{display:flex;height:32px;padding:5px 16px!important;justify-content:center;align-items:center;font-size:14px;gap:8px;border-radius:var(---4,4px);background:var(--normal,#03b752)!important;cursor:pointer;color:#fff}.modal .footer .skin13[data-v-ac38116e]:hover{background:var(--hover,#27c566)!important}.modal .footer .skin13[data-v-ac38116e]:active{background:var(--click,#029c4a)!important}.protocalModal .content[data-v-ac38116e]{color:var(--60,rgba(0,0,0,.6));font-family:Microsoft YaHei UI;font-size:16px;font-style:normal;font-weight:400;line-height:24px}.protocalModal .content .type[data-v-ac38116e]{color:var(---normal,#e37318);font-family:Microsoft YaHei UI;font-size:16px;font-style:normal;font-weight:700;line-height:24px;margin:0 -4px!important}.protocalModal .content a[data-v-ac38116e]{color:rgba(0,0,0,.6);text-decoration:underline!important}.protocalModal .footer[data-v-ac38116e]{display:flex;justify-content:end;gap:12px}.protocalModal .footer .protocal[data-v-ac38116e]{display:flex;align-items:center;gap:8px;position:relative}.protocalModal .footer .protocal .toast[data-v-ac38116e]{position:absolute;top:-30px;color:#fff;font-family:Microsoft YaHei UI;font-size:12px;font-style:normal;font-weight:400;line-height:16px;padding:6px 12px!important;border-radius:var(---4,4px);background:var(--60,rgba(0,0,0,.6))}.protocalModal .footer .protocal .toast[data-v-ac38116e]:before{content:"";position:absolute;top:28px;left:4px;width:0;height:0;border-style:solid;border-width:5px 6px 0 6px;border-color:var(--60,rgba(0,0,0,.6)) transparent transparent transparent}.protocalModal .footer .protocal .checkBox[data-v-ac38116e]{display:none}.protocalModal .footer .protocal .checkBoxInner[data-v-ac38116e]{width:16px;height:16px;position:relative;border-radius:var(---2,2px)!important;border:1px solid var(--15,rgba(0,0,0,.15))!important;background:var(--normal-white,#fff)!important;cursor:pointer!important}.protocalModal .footer .protocal .checkBoxInner[data-v-ac38116e]:after{content:" ";position:absolute;box-sizing:content-box!important;border:2px solid transparent;border-left:0;border-top:0;width:5px;height:10px;left:4px;top:0;transform:rotate(45deg) scaleY(0);transition:transform .15s ease-in .05s;transform-origin:center}.protocalModal .footer .protocal .checkBoxInner[data-v-ac38116e]:hover{border:1px solid var(--hover,#27c566)!important}.protocalModal .footer .protocal .checkBoxInner.isChecked[data-v-ac38116e]{background:var(--normal,#03b752)!important;border:1px solid var(--hover,#03b752)!important}.protocalModal .footer .protocal .checkBoxInner.isChecked[data-v-ac38116e]:after{transform:rotate(45deg) scaleY(1);border-color:#fff!important}.protocalModal .footer .protocal .label[data-v-ac38116e]{color:var(--60,rgba(0,0,0,.6));font-family:Microsoft YaHei UI;font-size:14px;font-style:normal;font-weight:400;line-height:22px}.protocalModal .footer .protocal .label a[data-v-ac38116e]{color:var(--90,rgba(0,0,0,.9))!important;text-decoration-line:underline!important}.protocalModal .footer .footerBtn[data-v-ac38116e]{display:flex;gap:12px}.protocalModal .footer .footerBtn .cancel[data-v-ac38116e]{display:flex;height:32px;padding:5px 16px!important;justify-content:center;align-items:center;font-size:14px;gap:8px;border-radius:var(---4,4px);border:1px solid var(--15,rgba(0,0,0,.15))!important;cursor:pointer;color:var(--90,rgba(0,0,0,.9))!important}.protocalModal .footer .footerBtn .cancel[data-v-ac38116e]:hover{color:var(--hover,#27c566)!important;border:1px solid var(--hover,#27c566)!important}.protocalModal .footer .footerBtn .cancel[data-v-ac38116e]:active{color:var(--click,#029c4a)!important;border:1px solid var(--click,#029c4a)!important}.protocalModal .footer .footerBtn .analyse[data-v-ac38116e]{display:flex;height:32px;padding:5px 16px!important;justify-content:center;align-items:center;font-size:14px;gap:8px;border-radius:var(---4,4px);background:var(--normal,#03b752)!important;cursor:pointer;color:#fff}.protocalModal .footer .footerBtn .analyse[data-v-ac38116e]:hover{background:var(--hover,#27c566)!important}.protocalModal .footer .footerBtn .analyse[data-v-ac38116e]:active{background:var(--click,#029c4a)!important}.protocalModal .footerEnd[data-v-ac38116e]{display:flex;justify-content:end}.protocalModal .footerEnd .unInstall[data-v-ac38116e]{display:flex;height:32px;padding:5px 16px!important;justify-content:center;align-items:center;font-size:14px;gap:8px;border-radius:var(---4,4px);border:none!important;cursor:pointer;color:var(--90,rgba(0,0,0,.9))!important}.protocalModal .footerEnd .unInstall[data-v-ac38116e]:hover{background-color:rgba(0,0,0,.06)!important}.protocalModal .footerEnd .unInstall[data-v-ac38116e]:active{background-color:rgba(0,0,0,.1)!important}#ai-assist-bangs{font-family:MicrosoftYaHei;color:#222;text-align:left;white-space:normal;position:fixed;top:0;left:0;z-index:2147483647;width:100%;display:flex;height:0;justify-content:center}#ai-assist-bangs *,#ai-assist-bangs :after,#ai-assist-bangs :before{box-sizing:border-box;padding:0;margin:0;-webkit-touch-callout:none}#ai-assist-bangs em,#ai-assist-bangs i{font-style:normal}#ai-assist-bangs a:active,#ai-assist-bangs a:focus,#ai-assist-bangs button:focus,#ai-assist-bangs input:focus{resize:none;-webkit-user-select:none;-moz-user-select:none;user-select:none;outline:none}#ai-assist-bangs button,#ai-assist-bangs input{border:0;background:transparent;-moz-appearance:none;appearance:none;-webkit-appearance:none;outline:none}#ai-assist-bangs a,#ai-assist-bangs a:focus,#ai-assist-bangs a:hover{cursor:pointer;color:inherit;text-decoration:none}#ai-assist-bangs li{list-style:none}#ai-assist-bangs .skeleton-class{background-color:rgba(0,0,0,.06)}#ai-assist-bangs .svg-icon[data-v-d8e8dad2]{width:1em;height:1em;vertical-align:-.15em;fill:currentColor;overflow:hidden}</style></template></div></html>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 
+
+
+
+<style>
+.bibtex-title {
+  color: #fff !important;
+}
+.bibtex-block {
+  background: #111 !important;
+  color: #fff !important;
+  border-radius: 8px;
+  padding: 1em;
+  font-size: 1em;
+  overflow-x: auto;
+}
+.bibtex-block code {
+  background: none !important;
+  color: inherit !important;
+}
+</style>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
